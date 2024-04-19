@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt"
+
 
 const userschema = new mongoose.Schema(
   {
@@ -21,7 +23,7 @@ const userschema = new mongoose.Schema(
       require: [true, "password is required"],
     },
 
-    validate: {
+    validation: {
       type: Boolean,
       default: false,
     },
@@ -38,6 +40,9 @@ const userschema = new mongoose.Schema(
     Work_Details: {
       type: String,
     },
+    Refresh_Token:{
+      type:String
+    }
   },
   { timestamps: true }
 );
@@ -46,10 +51,10 @@ const userschema = new mongoose.Schema(
 userschema.pre('save' ,async function(next){
 
     // if password is not chanegd/entered , we will move forward 
-    if(!this.ismodified("password")) return next();
+    if(!this.isModified("password")) return next();
 
     // if password is entered/updated , we will encrypt the password 
-    this.password= bcrypt.hash(this.password , 10)
+    this.password= await bcrypt.hash(this.password , 10)
 });
 
 
@@ -62,7 +67,7 @@ userschema.methods.isPasswordCorrect= async function (enteredPassword){
 }
 
 
-userSchema.methods.generateAccessToken = function(){
+userschema.methods.generateAccessToken = function(){
   return jwt.sign(
       {
           _id: this._id,
@@ -75,7 +80,7 @@ userSchema.methods.generateAccessToken = function(){
       }
   )
 }
-userSchema.methods.generateRefreshToken = function(){
+userschema.methods.generateRefreshToken = function(){
   return jwt.sign(
       {
           _id: this._id,
