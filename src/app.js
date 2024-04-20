@@ -1,4 +1,5 @@
 import dotenv from "dotenv"
+import cookieParser from "cookie-parser"
 
 import express from "express";
 dotenv.config();
@@ -16,11 +17,14 @@ app.use(express.urlencoded({extended:true}))
 
 app.use(express.static("public"))
 
+app.use(cookieParser())
+
 
 
 // importing routers
 
 import userRouter from "./Routes/user.route.js";
+
 
 
 // query is passed to the user router 
